@@ -20,7 +20,6 @@ const typeDefs = gql`
     promociona: Boolean
     logo: String
     categoria: String
-    productos: [Producto]
   }
 
   type Servicio {
@@ -49,7 +48,6 @@ const typeDefs = gql`
     id: ID
     categoria: String
     imagen: String
-    productos: [ProductoPopayanMerca]
   }
 
   type Query {
@@ -57,11 +55,16 @@ const typeDefs = gql`
     obtenerEstablecimientos: [Establecimiento]
     obtenerEstablecimiento(id: ID!): Establecimiento
     obtenerProductosEstablecimiento(id: ID!): [Producto]
+    obtenerProductoEstablecimiento(id: ID!): Producto
+    productoEstablecimiento(id: ID!): [Producto]
     obtenerServicios: [Servicio]
     obtenerCategoriasPopayanMerca: [CategoriasPopayanMerca]
+    obtenerPromocionadosPopayanMerca: [Producto]
 
     #Movil
-    obtenerComidasRapidas: [Establecimiento]
+    obtenerEstablecimientosComidasRapidas: [Establecimiento]
+    obtenerEstablecimientosPromocionados: [Establecimiento]
+    obtenerProductosPopayanMerca: [Producto]
   }
 
   type Token {
@@ -74,8 +77,11 @@ const typeDefs = gql`
     imagen: String
     detalle: String
     precio: Float!
-    disponible: Boolean
+    promocion: Int
     categoria: String!
+    subcategoria: String
+    seccion: String
+    establecimiento: ID
   }
 
   input UsuarioInput {
@@ -99,6 +105,7 @@ const typeDefs = gql`
     telefono: String!
     horario_atencion: String!
     logo: String
+    promociona: Boolean
     categoria: String!
   }
 
@@ -107,8 +114,11 @@ const typeDefs = gql`
     imagen: String
     detalle: String
     precio: Int
-    disponible: Boolean
     categoria: String
+    subcategoria: String
+    seccion: String
+    promocion: Int
+    establecimiento: ID
   }
 
   type File {
@@ -152,10 +162,11 @@ const typeDefs = gql`
     crearEstablecimiento(input: EstablecimientoInput): String
     eliminarEstablecimiento(id: ID!): String
     editarEstablecimiento(id: ID, input: EstablecimientoInput): Establecimiento
+    editarProductoEstablecimiento(id: ID, input: ProductoInput): String
     AgregarCategoriasPopayanMerca(input: PopayanMercaCategoriaInput): String
 
     #ProductosEstablecimientos
-    agregarProductoEstablecimiento(id: ID!, input: ProductoInput): Producto
+    agregarProductoEstablecimiento(input: ProductoInput): String
 
     #Agregar productos popayan merca
     agregarProductoPopayanMerca(

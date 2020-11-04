@@ -10,9 +10,6 @@ const PopayanMercaCatSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
-  productos: {
-    type: Array,
-  },
 });
 
 module.exports = mongoose.model(

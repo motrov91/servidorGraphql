@@ -40,9 +40,6 @@ const EstablecimientoSchema = mongoose.Schema({
     default: "Establecimiento",
     trim: true,
   },
-  productos: {
-    type: Array,
-  },
 });
 
 module.exports = mongoose.model("Establecimiento", EstablecimientoSchema);

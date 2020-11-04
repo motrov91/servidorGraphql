@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { model } = require("./Producto");
 
 const PopayanMercaProductoSchema = mongoose.Schema({
   categoria: {

@@ -2,7 +2,7 @@ const fileSystem = require("fs");
 
 const Usuario = require("../Models/Usuario");
 const Establecimiento = require("../Models/Establecimiento");
-const Producto = require("../Models/Producto");
+const Productos = require("../Models/Productos");
 const Servicio = require("../Models/Servicio");
 const PopayanMercaCategorias = require("../Models/PopayanMercaCategorias");
 const PopayanMercaProducto = require("../Models/PopayanMercaProducto");
@@ -74,12 +74,19 @@ const resolvers = {
       return establecimiento;
     },
     obtenerProductosEstablecimiento: async (_, { id }, ctx) => {
-      let establecimiento = await Establecimiento.findById(id);
+      let prod = await Productos.find({ establecimiento: id });
 
-      return establecimiento.productos;
+      return prod;
     },
-    obtenerComidasRapidas: async (_, {}, ctx) => {
-      const rapidas = await Establecimiento.find();
+    obtenerProductoEstablecimiento: async (_, { id }, ctx) => {
+      let producto = await Productos.findOne({ _id: id });
+      return producto;
+    },
+    obtenerEstablecimientosComidasRapidas: async (_, {}, ctx) => {
+      const rapidas = await Establecimiento.find({
+        categoria: "Comidas Rapidas",
+      });
+
       return rapidas;
     },
     obtenerServicios: async (_, {}, ctx) => {
@@ -87,9 +94,21 @@ const resolvers = {
       return servicios;
     },
     obtenerCategoriasPopayanMerca: async (_, {}, ctx) => {
-      const categorias = await PopayanMercaCategorias.find({});
+      const categorias = await PopayanMercaCategorias.find();
       return categorias;
     },
+    obtenerProductosPopayanMerca: async (_, {}, ctx) => {
+      const productosPm = await Productos.find({categoria : "Popayan Merca" })
+      return productosPm;
+    },
+    obtenerEstablecimientosPromocionados: async (_, {}, ctx) => {
+      const promocionados = await Establecimiento.find({ promociona: true });
+      return promocionados;
+    },
+    obtenerPromocionadosPopayanMerca: async (_, {}, ctx) => {
+      const promosPM = await Productos.find({categoria: "Popayan Merca", promocion:{$gt:0}})
+      return promosPM;
+    }
   },
 
   Mutation: {
@@ -124,10 +143,6 @@ const resolvers = {
 
       if (!existeUsuario) {
         throw new Error("El usuario no existe");
-      }
-
-      if (existeUsuario.rol !== "Administrador") {
-        throw new Error("No tienes permisos para acceder");
       }
 
       //Revisar si el password es correcto
@@ -196,17 +211,26 @@ const resolvers = {
 
       return establecimiento;
     },
-    agregarProductoEstablecimiento: async (_, { id, input }, ctx) => {
-      let establecimiento = await Establecimiento.findById(id);
-      const producto = new Producto(input);
-      establecimiento.productos.push(producto);
-      establecimiento = await Establecimiento.findByIdAndUpdate(
-        { _id: id },
-        establecimiento,
-        { new: true }
-      );
+    editarProductoEstablecimiento: async (_, { id, input }, ctx) => {
+      console.log("id", id);
+      console.log("input", input);
+      let producto = await Productos.findById(id);
 
-      return producto;
+      if (!producto) {
+        throw new Error("No existe el producto");
+      }
+
+      producto = await Productos.findByIdAndUpdate({ _id: id }, input, {
+        new: true,
+      });
+
+      return "El producto se ha actualizado";
+    },
+    agregarProductoEstablecimiento: async (_, { input }, ctx) => {
+      const producto = new Productos(input);
+      producto.save();
+
+      return "El producto ha sido creado";
     },
     //Directorio de servicios
     crearServicio: async (_, { input }, ctx) => {
@@ -229,7 +253,6 @@ const resolvers = {
     },
     //Popayan merca
     AgregarCategoriasPopayanMerca: async (_, { input }, ctx) => {
-      console.log(input);
       const nuevaCategoria = new PopayanMercaCategorias(input);
       nuevaCategoria.save();
       return "Categoria creada con éxito";
@@ -246,7 +269,6 @@ const resolvers = {
       );
       return "El producto se ha creado con exito";
     },
-
     singleUpload: async (parent, args) => {
       return args.file.then((file) => {
         //Contents of Upload scalar: https://github.com/jaydenseric/graphql-upload#class-graphqlupload

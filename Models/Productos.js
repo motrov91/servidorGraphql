@@ -22,15 +22,29 @@ const ProductoSchema = mongoose.Schema({
     required: true,
     trim: true,
   },
-  disponible: {
-    type: Boolean,
-    default: true,
+  promocion: {
+    type: Number,
+    trim: true,
+    default: 0,
   },
   categoria: {
     type: String,
     trim: true,
     required: true,
   },
+  subcategoria: {
+    type: String,
+    trim: true,
+  },
+  seccion: {
+    type: String,
+    trim: true,
+  },
+  establecimiento: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Establecimiento",
+  },
 });
 
-module.exports = mongoose.model("Producto", ProductoSchema);
+module.exports = mongoose.model("Productos", ProductoSchema);
