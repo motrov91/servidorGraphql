@@ -60,7 +60,7 @@ const typeDefs = gql`
     obtenerServicios: [Servicio]
     obtenerCategoriasPopayanMerca: [CategoriasPopayanMerca]
     obtenerPromocionadosPopayanMerca: [Producto]
-
+    #
     #Movil
     obtenerEstablecimientosComidasRapidas: [Establecimiento]
     obtenerEstablecimientosPromocionados: [Establecimiento]
